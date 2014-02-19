@@ -59,7 +59,7 @@ namespace BuildMonitorPackage
             events.Opened += Solution_Opened;
 
             PrintLine("Build monitor initialized");
-            PrintLine("Path to persist data: {0}", Settings.RepositoryPath);
+            //PrintLine("Path to persist data: {0}", Settings.RepositoryPath);
 
             monitor.SolutionBuildFinished = b =>
             {

@@ -17,7 +17,6 @@ namespace BuildMonitorPackage
 
         private const string ApplicationFolderName = "Build Monitor";
         private const string JsonFileName = "buildtimes.json";
-        
 
         public static void CreateApplicationFolderIfNotExist()
         {
