@@ -1,11 +1,13 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace BuildMonitor.Domain
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public interface IProject
     {
         Guid Id { get; }
-        string Name { get; }
+        [JsonProperty] string Name { get; }
     }
 
     public class Project : IProject

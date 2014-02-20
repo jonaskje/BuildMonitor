@@ -144,7 +144,8 @@ namespace BuildMonitorPackage
         int IVsUpdateSolutionEvents.UpdateSolution_Begin(ref int pfCancelUpdate)
         {
             // This method is called when the entire solution starts to build.
-            monitor.SolutionBuildStart(solution);
+            monitor.SolutionBuildStart(GetDTE().Solution.SolutionBuild.ActiveConfiguration.Name, solution);
+            
 
             return VSConstants.S_OK;
         }

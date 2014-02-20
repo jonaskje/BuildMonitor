@@ -15,7 +15,7 @@ namespace BuildMonitor.UnitTests.Domain
         public void Setup()
         {
             timerFake = new TimerFake();
-            solutionBuild = new SolutionBuild(timerFake, new Solution());
+            solutionBuild = new SolutionBuild(timerFake, "", new Solution());
         }
 
         [Test]

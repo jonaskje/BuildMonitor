@@ -9,15 +9,17 @@ namespace BuildMonitor.Domain
     {
         private readonly IList<IProjectBuild> projects;
         public ISolution Solution { get; private set; }
+        private string configuration;
 
         public void AddProject(IProjectBuild projectBuild)
         {
             projects.Add(projectBuild);
         }
 
-        public SolutionBuild(ITimer timer, ISolution solution) : base(timer)
+        public SolutionBuild(ITimer timer, string configuration, ISolution solution) : base(timer)
         {
             Solution = solution;
+            this.configuration = configuration;
             projects = new List<IProjectBuild>();
         }
 
@@ -47,6 +49,7 @@ namespace BuildMonitor.Domain
                 UserInfo = BuildUserInfo(),
                 Start = Started,
                 Time = MillisecondsElapsed,
+                Configuration = configuration,
                 Solution,
                 Projects = projects.Select(p => p.Data())
             };

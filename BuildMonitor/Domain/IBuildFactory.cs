@@ -2,7 +2,7 @@ namespace BuildMonitor.Domain
 {
     public interface IBuildFactory
     {
-        ISolutionBuild CreateSolutionBuild(ISolution solution);
+        ISolutionBuild CreateSolutionBuild(string configuration, ISolution solution);
         IProjectBuild CreateProjectBuild(IProject project);
     }
 }

@@ -5,6 +5,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Net;
 using System.Text;
+using System.Dynamic;
+using System.Reflection;
 
 namespace BuildMonitor.Domain
 {
@@ -14,7 +16,7 @@ namespace BuildMonitor.Domain
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
             request.Method = method;
-            request.Timeout = 10 * 60 * 1000; // 10 minutes
+            request.Timeout = 10 * 1000;
 
             if (body != null)
             {
@@ -75,13 +77,13 @@ namespace BuildMonitor.Domain
             string uri = String.Format("http://{0}:{1}/api/{2}/{3}", ptserver, ptport, ptid, path);
 
             var sb = new StringBuilder();
-            sb.Append("docs=[");
+            sb.Append("{ \"report\": ");
             sb.Append(json);
-            sb.Append("]");
+            sb.Append("}");
 
             try
             {
-                DoRequest("POST", uri, sb.ToString(), "application/x-www-form-urlencoded");
+                DoRequest("POST", uri, sb.ToString(), "application/json");
             }
             catch(Exception)
             {
@@ -95,11 +97,11 @@ namespace BuildMonitor.Domain
 
         public BuildRepository(string pathToDb)
         {
-            if(string.IsNullOrEmpty(pathToDb))
-                throw new ArgumentNullException("pathToDb");
+            //if(string.IsNullOrEmpty(pathToDb))
+            //    throw new ArgumentNullException("pathToDb");
 
             Source = pathToDb;
-            serializer = new JsonSerializer {Formatting = Formatting.Indented};
+            serializer = new JsonSerializer();
             serializer.Converters.Add(new IsoDateTimeConverter());
             serializer.NullValueHandling = NullValueHandling.Ignore;
         }
@@ -108,17 +110,26 @@ namespace BuildMonitor.Domain
 
         public void Save(IPersistable build)
         {
-            if (build as ISolutionBuild != null) // Only solution builds
+            if (build as ISolutionBuild != null) // Only solution builds 
             {
-                using (StringWriter sw = new StringWriter())
-                {
-                    using (JsonWriter writer = new JsonTextWriter(sw))
+                var buildData = build.Data();
+
+                Type t = buildData.GetType();
+                PropertyInfo p = t.GetProperty("Time");
+                long solutionBuildTimeMs = (long)(p.GetValue(buildData, null));
+
+                if (solutionBuildTimeMs > 100)
+                { 
+                    using (StringWriter sw = new StringWriter())
                     {
-                        serializer.Serialize(writer, build.Data());
+                        using (JsonWriter writer = new JsonTextWriter(sw))
+                        {
+                            serializer.Serialize(writer, buildData);
 
+                        }
+
+                        PtrackClient.SendJsonDocument("visualStudioReport", sw.ToString());
                     }
-
-                    PtrackClient.SendJsonDocument("visualStudioReport", sw.ToString());
                 }
             }
 

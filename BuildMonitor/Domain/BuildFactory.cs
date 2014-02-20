@@ -2,9 +2,9 @@ namespace BuildMonitor.Domain
 {
     public class BuildFactory : IBuildFactory
     {
-        public ISolutionBuild CreateSolutionBuild(ISolution solution)
+        public ISolutionBuild CreateSolutionBuild(string configuration, ISolution solution)
         {
-            return new SolutionBuild(new BuildTimer(), solution);
+            return new SolutionBuild(new BuildTimer(), configuration, solution);
         }
 
         public IProjectBuild CreateProjectBuild(IProject project)

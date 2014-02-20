@@ -30,10 +30,14 @@ namespace BuildMonitor.Domain
 
         public void SolutionBuildStart(ISolution solution)
         {
+            SolutionBuildStart("", solution);
+        }
+        public void SolutionBuildStart(string configuration, ISolution solution)
+        {
             if(solutionBuild != null && solutionBuild.IsRunning)
                 throw new InvalidOperationException("There is already a build running");
 
-            solutionBuild = buildFactory.CreateSolutionBuild(solution);
+            solutionBuild = buildFactory.CreateSolutionBuild(configuration, solution);
 
             solutionBuild.Start();
         }
